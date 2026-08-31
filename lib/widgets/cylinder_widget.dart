@@ -245,12 +245,16 @@ class _CylinderPainter extends CustomPainter {
     // Percentage text
     final pct = '${(fillPercent * 100).round()}%';
     final tp = TextPainter(
-      text: TextSpan(
-        text: pct,
-        style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.w600),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
+  text: TextSpan(
+    text: pct,
+    style: const TextStyle(
+      fontSize: 9,
+      color: Colors.white,
+      fontWeight: FontWeight.w600,
+    ),
+  ),
+  textDirection: Directionality.of(canvas as BuildContext),
+)..layout();
     tp.paint(canvas, Offset((w - tp.width) / 2, 14 + (h - 20) * 0.4));
   }
 
