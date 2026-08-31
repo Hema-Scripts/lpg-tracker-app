@@ -131,29 +131,31 @@ class NotificationService {
   }
 
   Future<void> scheduleBookingReminder(DateTime reminderDate) async {
-    await initialize();
-    if (!await _isEnabled('notifications_booking')) return;
+  await initialize();
+  if (!await _isEnabled('notifications_booking')) return;
 
-    // If the requested time has already passed, don't schedule into the past.
-    final scheduled = tz.TZDateTime.from(reminderDate, tz.local);
-    if (scheduled.isBefore(tz.TZDateTime.now(tz.local))) return;
+  // If the requested time has already passed, don't schedule into the past.
+  final scheduled = tz.TZDateTime.from(reminderDate, tz.local);
+  if (scheduled.isBefore(tz.TZDateTime.now(tz.local))) return;
 
-    // Schedule for future — requires exact_alarm permission on Android 12+
-    await _plugin.zonedSchedule(
-      9003,
-      'Time to Book Your Cylinder!',
-      'Your gas is almost finished. Book your next cylinder today.',
-      scheduled,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'lpg_reminder',
-          'Booking Reminders',
-          channelDescription: 'Scheduled reminders to book next cylinder',
-          importance: Importance.high,
-          priority: Priority.high,
-        ),
+  // Schedule for future — requires exact_alarm permission on Android 12+
+  await _plugin.zonedSchedule(
+    9003,
+    'Time to Book Your Cylinder!',
+    'Your gas is almost finished. Book your next cylinder today.',
+    scheduled,
+    const NotificationDetails(
+      android: AndroidNotificationDetails(
+        'lpg_reminder',
+        'Booking Reminders',
+        channelDescription: 'Scheduled reminders to book next cylinder',
+        importance: Importance.high,
+        priority: Priority.high,
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-    );
-  }
+    ),
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+  );
+}
 }
