@@ -32,7 +32,12 @@ class WhatsAppOrderInfo {
   final String number;
   final String prefilledMessage;
   final String instructions;
-  WhatsAppOrderInfo({required this.number, required this.prefilledMessage, required this.instructions});
+
+  const WhatsAppOrderInfo({
+    required this.number,
+    required this.prefilledMessage,
+    required this.instructions,
+  });
 }
 
 class WhatsAppOrderService {
