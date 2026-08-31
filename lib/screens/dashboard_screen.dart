@@ -300,22 +300,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+    Widget _buildEmptyState() {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 24),
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade200, width: 0.5)),
-      child: Column(children: [
-        Icon(Icons.sms_outlined, size: 48, color: Colors.grey.shade300),
-        const SizedBox(height: 12),
-        const Text('No LPG bookings found yet', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-        const SizedBox(height: 6),
-        Text('Tap ↺ above to scan your SMS inbox for Indane, HP Gas, or Bharat Gas messages.\n\nOr tap "+ Add booking" to enter manually.',
-            textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: Colors.grey.shade500, height: 1.5)),
-      ]),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.grey.shade200,
+          width: 0.5,
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.sms_outlined,
+            size: 48,
+            color: Colors.grey.shade300,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'No LPG bookings found yet',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Tap ↺ above to scan your SMS inbox for Indane, HP Gas, or Bharat Gas messages.\n\nOr tap "+ Add booking" to enter manually.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade500,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _sectionLabel(String text) => Text(text.toUpperCase(),
-      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.grey.shade500, letterSpacing: 0.8));
+  Widget _sectionLabel(String text) => Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey.shade500,
+          letterSpacing: 0.8,
+        ),
+      );
 }
