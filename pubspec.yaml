@@ -1,0 +1,69 @@
+name: lpg_tracker
+description: Smart LPG Cylinder Tracker for Indian households
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # SMS reading & listening — using the actively-maintained `another_telephony`
+  # fork instead of the original `telephony` package, which hasn't been
+  # updated since ~2021 and doesn't declare itself compatible with the v2
+  # Android embedding structure current Flutter versions expect. That's what
+  # causes "Build failed due to use of deleted Android v1 embedding" even
+  # with a correct MainActivity/manifest — Flutter's tooling flags any
+  # dependency (not just the app itself) that still looks v1-only. Same
+  # API — this fork is a drop-in replacement (see sms_service.dart).
+  another_telephony: ^0.4.1
+  # Local database
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  # Local notifications
+  flutter_local_notifications: ^16.3.0
+  # Charts
+  fl_chart: ^0.66.2
+  # PDF export
+  pdf: ^3.10.8
+  printing: ^5.12.0
+  # Path provider for file storage
+  path_provider: ^2.1.2
+  # Internationalization
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.3
+  # Shared preferences
+  shared_preferences: ^2.2.2
+  # Permission handler
+  permission_handler: ^11.3.0
+  cupertino_icons: ^1.0.2
+  # Launching tel: URIs for emergency contacts, and wa.me for WhatsApp ordering
+  url_launcher: ^6.3.0
+  # Required by flutter_local_notifications for zonedSchedule
+  timezone: ^0.9.4
+  # Sharing the exported backup file / PDF
+  share_plus: ^10.1.2
+  # Picking a backup file to import
+  file_picker: ^8.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  # NOTE: no assets/ folder is bundled and nothing in lib/ loads assets via
+  # Image.asset/rootBundle, so the assets declaration was removed — declaring
+  # a folder that doesn't exist makes `flutter pub get` / build fail outright.
+  # If you add app icons, illustrations, etc. later, create assets/ and
+  # re-add:
+  #   assets:
+  #     - assets/
+  #
+  # `generate: true` (ARB-based l10n codegen) was also removed: the Settings
+  # screen's language dropdown is currently cosmetic only (see README notes)
+  # and there are no lib/l10n/*.arb files, so this flag did nothing but add
+  # a build step. Re-add it once real localization is wired up.
