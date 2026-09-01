@@ -22,7 +22,7 @@ dependencies:
   sqflite: ^2.3.0
   path: ^1.8.3
   # Local notifications
-  flutter_local_notifications: ^16.3.0
+  flutter_local_notifications: ^22.3.0
   # Charts
   fl_chart: ^0.66.2
   # PDF export
