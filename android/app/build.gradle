@@ -8,11 +8,12 @@ plugins {
 
 android {
     namespace "com.yourname.lpgtracker"
-    compileSdk 35
+    compileSdk 36
+    ndkVersion "28.2.13676358"
 
     defaultConfig {
         applicationId "com.yourname.lpgtracker"
-        minSdk 21           // Android 5.0+ covers 98%+ of Indian devices
+        minSdk 21
         targetSdk 35
         versionCode 1
         versionName "1.0.0"
@@ -20,7 +21,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug  // Replace with release keystore before Play Store upload
+            signingConfig signingConfigs.debug
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -34,6 +35,7 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+}
 }
 
 flutter {
