@@ -42,7 +42,7 @@ dependencies:
   # Launching tel: URIs for emergency contacts, and wa.me for WhatsApp ordering
   url_launcher: ^6.3.0
   # Required by flutter_local_notifications for zonedSchedule
-  timezone: ^0.9.4
+  timezone: ^0.11.1
   # Sharing the exported backup file / PDF
   share_plus: ^10.1.2
   # Picking a backup file to import
