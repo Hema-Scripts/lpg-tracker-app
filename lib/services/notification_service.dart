@@ -8,25 +8,35 @@ import 'database_service.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
+
   factory NotificationService() => _instance;
+
   NotificationService._internal();
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+
   final _db = DatabaseService();
 
   bool _initialized = false;
 
   Future<void> initialize() async {
     if (_initialized) return;
-    _initialized = true;
 
     tz_data.initializeTimeZones();
 
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const initSettings = InitializationSettings(android: androidSettings);
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    await _plugin.initialize(initSettings);
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+    );
+
+    await _plugin.initialize(
+      settings: initSettings,
+    );
+
+    _initialized = true;
   }
 
   /// Reads the user's notification preferences from settings.
@@ -40,9 +50,14 @@ class NotificationService {
     await initialize();
 
     // Respect user notification preferences.
-    final isDeliveryEvent = booking.status == BookingStatus.delivered ||
+    final isDeliveryEvent =
+        booking.status == BookingStatus.delivered ||
         booking.status == BookingStatus.outForDelivery;
-    final settingKey = isDeliveryEvent ? 'notifications_delivery' : 'notifications_booking';
+
+    final settingKey = isDeliveryEvent
+        ? 'notifications_delivery'
+        : 'notifications_booking';
+
     if (!await _isEnabled(settingKey)) return;
 
     String title;
@@ -54,34 +69,40 @@ class NotificationService {
         body =
             '${booking.companyDisplayName} booking #${booking.bookingId} registered.';
         break;
+
       case BookingStatus.dacGenerated:
         title = 'DAC Generated';
         body =
             'DAC No: ${booking.dacNumber ?? "N/A"} for booking #${booking.bookingId}';
         break;
+
       case BookingStatus.outForDelivery:
         title = 'Cylinder Out for Delivery';
-        body = 'Your ${booking.companyDisplayName} cylinder is on the way!';
+        body =
+            'Your ${booking.companyDisplayName} cylinder is on the way!';
         break;
+
       case BookingStatus.delivered:
         title = 'Cylinder Delivered!';
         body =
             '${booking.companyDisplayName} cylinder delivered. Price: ₹${booking.price?.toStringAsFixed(2) ?? "N/A"}';
         break;
+
       default:
         title = 'LPG Update';
         body = 'New update for booking #${booking.bookingId}';
     }
 
     await _plugin.show(
-      booking.hashCode,
-      title,
-      body,
-      const NotificationDetails(
+      id: booking.hashCode,
+      title: title,
+      body: body,
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'lpg_booking',
           'LPG Booking Updates',
-          channelDescription: 'Notifications for LPG booking and delivery',
+          channelDescription:
+              'Notifications for LPG booking and delivery',
           importance: Importance.high,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
@@ -92,12 +113,15 @@ class NotificationService {
 
   Future<void> showGasWarning(int daysRemaining) async {
     await initialize();
+
     if (!await _isEnabled('notifications_booking')) return;
+
     await _plugin.show(
-      9001,
-      'Book Your Next Cylinder',
-      'Gas estimated to finish in $daysRemaining day${daysRemaining == 1 ? '' : 's'}. Book now!',
-      const NotificationDetails(
+      id: 9001,
+      title: 'Book Your Next Cylinder',
+      body:
+          'Gas estimated to finish in $daysRemaining day${daysRemaining == 1 ? '' : 's'}. Book now!',
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'lpg_warning',
           'Gas Level Warnings',
@@ -112,16 +136,20 @@ class NotificationService {
 
   Future<void> showSafetyReminder() async {
     await initialize();
+
     if (!await _isEnabled('notifications_safety')) return;
+
     await _plugin.show(
-      9002,
-      'Safety Reminder',
-      'Check cylinder seal, tube, and regulator after delivery.',
-      const NotificationDetails(
+      id: 9002,
+      title: 'Safety Reminder',
+      body:
+          'Check cylinder seal, tube, and regulator after delivery.',
+      notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'lpg_safety',
           'Safety Reminders',
-          channelDescription: 'Post-delivery safety checklist reminders',
+          channelDescription:
+              'Post-delivery safety checklist reminders',
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
           icon: '@mipmap/ic_launcher',
@@ -131,31 +159,37 @@ class NotificationService {
   }
 
   Future<void> scheduleBookingReminder(DateTime reminderDate) async {
-  await initialize();
-  if (!await _isEnabled('notifications_booking')) return;
+    await initialize();
 
-  // If the requested time has already passed, don't schedule into the past.
-  final scheduled = tz.TZDateTime.from(reminderDate, tz.local);
-  if (scheduled.isBefore(tz.TZDateTime.now(tz.local))) return;
+    if (!await _isEnabled('notifications_booking')) return;
 
-  // Schedule for future — requires exact_alarm permission on Android 12+
-  await _plugin.zonedSchedule(
-    9003,
-    'Time to Book Your Cylinder!',
-    'Your gas is almost finished. Book your next cylinder today.',
-    scheduled,
-    const NotificationDetails(
-      android: AndroidNotificationDetails(
-        'lpg_reminder',
-        'Booking Reminders',
-        channelDescription: 'Scheduled reminders to book next cylinder',
-        importance: Importance.high,
-        priority: Priority.high,
+    // Convert the requested DateTime to the timezone-aware TZDateTime.
+    final scheduled = tz.TZDateTime.from(reminderDate, tz.local);
+
+    // If the requested time has already passed, don't schedule it.
+    if (scheduled.isBefore(tz.TZDateTime.now(tz.local))) return;
+
+    // Schedule for the future.
+    // Android 12+ may require exact-alarm permission depending
+    // on the app/device configuration.
+    await _plugin.zonedSchedule(
+      id: 9003,
+      title: 'Time to Book Your Cylinder!',
+      body:
+          'Your gas is almost finished. Book your next cylinder today.',
+      scheduledDate: scheduled,
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'lpg_reminder',
+          'Booking Reminders',
+          channelDescription:
+              'Scheduled reminders to book next cylinder',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
       ),
-    ),
-    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-    uiLocalNotificationDateInterpretation:
-        UILocalNotificationDateInterpretation.absoluteTime,
-  );
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+  }
 }
-}
+```
